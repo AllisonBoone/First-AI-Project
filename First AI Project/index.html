@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My coding coach</title>
+  </head>
+  <body>
+    <h1>My coding coach!</h1>
+    <h2>My very rude but funny coach.</h2>
+
+    <p>Problem:</p>
+    <textarea cols="50" rows="10" id="problemText"></textarea>
+
+    <p>Rudeness:</p>
+    <input type="range" min="1" max="10" id="rangeInput" />
+
+    <br />
+    <br />
+
+    <button id="submitButton">Submit</button>
+
+    <p id="answerText">The answer goes here...</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      const problemText = document.getElementById("problemText");
+      const myButton = document.getElementById("submitButton");
+      const rangeInput = document.getElementById("rangeInput");
+      const answerText = document.getElementById("answerText");
+      function doSomething() {
+          const loadingText =
+          "You asked us: <br />" +
+          problemText.value +
+          "We are looking for the answer...";
+          answerText.innerHTML = loadingText;
+
+          const data = {
+              model: "gpt-3.5-turbo",
+              message: [
+                  {
+                      role: "system",
+                      content: "You are a rude assistant.",
+                  },
+                  {
+                      role: "user",
+                      content: problemText.value,
+                  },
+              ],
+          };
+          const headers = {
+              headers: {
+                  Authorization:
+                  // add ChatGPT API key here
+              },
+          };
+          axios
+          .post("https://api.openai.com/v1/chat/completions", data, headers)
+          .then(function (response) {
+              answerText.innerHTML = (response.data.choices[0].message.content);
+          });
+      }
+      submitButton.addEventListener("click", doSomething);
+    </script>
+  </body>
+</html>
