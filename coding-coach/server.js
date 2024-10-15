@@ -4,13 +4,14 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+console.log('API Key:', OPENAI_API_KEY);
+
 const app = express();
 const port = 3000;
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
-
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 app.post('/api/ask', async (req, res) => {
   try {
@@ -25,24 +26,28 @@ app.post('/api/ask', async (req, res) => {
         },
         {
           role: 'user',
-          conent: problem,
+          content: problem,
         },
       ],
     };
 
     const headers = {
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       'Content-Type': 'application/json',
     };
+
+    console.log('Sending data to OpenAI:', data);
 
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       data,
       { headers }
     );
+
+    console.log('Response from OpenAI:', response.data);
     res.json({ answer: response.data.choices[0].message.content });
   } catch (error) {
-    console.log('Error:', error.message);
+    console.error('Error:', error.message);
     res
       .status(500)
       .json({ error: 'An error occurred while fetching the answer.' });
